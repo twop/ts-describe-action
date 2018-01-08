@@ -1,0 +1,41 @@
+{
+  "name": "redux-typed-actions",
+  "version": "1.0.0",
+  "description": "typesafety and less boilerplate for redux actions/reducers",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twop/redux-typed-actions.git"
+  },
+  "keywords": ["redux", "typescript"],
+  "author": "Simon Korzunov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/twop/redux-typed-actions/issues"
+  },
+  "homepage": "https://github.com/twop/redux-typed-actions#readme",
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      },
+      "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+      "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+    }
+  },
+  "devDependencies": {
+    "@types/jest": "^22.0.1",
+    "ts-jest": "^22.0.1",
+    "jest": "^22.0.1",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "redux": "^4.0.0-beta.1"
+  }
+}

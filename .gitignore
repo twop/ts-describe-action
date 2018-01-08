@@ -1,0 +1,6 @@
+node_modules/
+test/*.js
+*.map
+*.tgz
+
+npm-debug.log
