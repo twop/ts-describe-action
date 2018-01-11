@@ -30,7 +30,7 @@ export function createActionDesc<TType extends string, TState, TPayload = void>(
   };
 }
 
-type AnySimpleType = object | string | number | void;
+type AnySimpleType = any;
 
 export function createReducer<TState>(
   actions: ActionDesc<string, TState, AnySimpleType>[],
