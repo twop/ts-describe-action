@@ -1,7 +1,8 @@
-import { createActionDesc, createReducer } from '../index';
+import 'jest';
+import { createAction, createReducer, createSimpleAction } from '../index';
 
 describe('action/handler cases', () => {
-  const Add = createActionDesc(
+  const Add = createAction(
     'ADD',
     (prev: number, addition: number) => prev + addition
   );
@@ -10,10 +11,9 @@ describe('action/handler cases', () => {
     expect(Add.handler(1, 2)).toBe(3);
   });
 
-  test('handler can omit payload', () => {
-    const Increment = createActionDesc('INC', (prev: number) => prev + 1);
-    Increment.create(undefined); // NOTE you can put only undefined here.
-    expect(Increment.handler(1, undefined)).toBe(2);
+  test('handler for simple action doesnt need payload', () => {
+    const Increment = createSimpleAction('INC', (prev: number) => prev + 1);
+    expect(Increment.handler(1)).toBe(2);
   });
 
   test('action creator put data into payload prop', () => {
@@ -28,7 +28,7 @@ describe('action/handler cases', () => {
 });
 
 describe('reducer cases', () => {
-  const Add = createActionDesc(
+  const Add = createAction(
     'ADD',
     (prev: number, addition: number) => prev + addition
   );
@@ -37,6 +37,13 @@ describe('reducer cases', () => {
     const initial = 100500;
     const reducer = createReducer([Add], initial);
     expect(reducer(undefined, { type: 'unrelated action' })).toEqual(initial);
+  });
+
+  test('createReducer takes simple and payload actions', () => {
+    const Increment = createSimpleAction('INC', (prev: number) => prev + 1);
+    const reducer = createReducer([Add, Increment], 0);
+    expect(reducer(undefined, Increment.create())).toEqual(1);
+    expect(reducer(undefined, Add.create(5))).toEqual(5);
   });
 
   test('reducer passes payload to handler', () => {
