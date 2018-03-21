@@ -8,12 +8,12 @@ describe('action/handler cases', () => {
   );
 
   test('handler returns new state', () => {
-    expect(Add.handler(1, 2)).toBe(3);
+    expect(Add.handle(1, 2)).toBe(3);
   });
 
   test('handler for simple action doesnt need payload', () => {
     const Increment = createSimpleAction('INC', (prev: number) => prev + 1);
-    expect(Increment.handler(1)).toBe(2);
+    expect(Increment.handle(1)).toBe(2);
   });
 
   test('action creator put data into payload prop', () => {
@@ -24,6 +24,11 @@ describe('action/handler cases', () => {
   test('isMine satisfies itself', () => {
     const action = Add.create(2);
     expect(Add.isMine(action)).toBeTruthy();
+  });
+
+  test('simple actions are reused', () => {
+    const Inc = createSimpleAction('INC', (prev: number) => prev + 1);
+    expect(Inc.create()).toBe(Inc.create());
   });
 });
 

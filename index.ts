@@ -19,30 +19,30 @@ const enum ActionType {
   WITH_PAYLOAD = 1
 }
 
-export interface ActionDesc<TType extends string, TState, TPayload = void> {
+export interface ActionDesc<TType extends string, TState, TPayload> {
   tag: ActionType.WITH_PAYLOAD;
   type: TType;
-  handler: Handler<TState, TPayload>;
-  create: (payload: TPayload) => Action<TType>;
+  handle: Handler<TState, TPayload>;
+  create: (payload: TPayload) => PayloadAction<TType, TPayload>;
   isMine: (action: Action) => action is PayloadAction<TType, TPayload>;
 }
 
 export interface SimpleActionDesc<TType extends string, TState> {
   tag: ActionType.SIMPLE;
   type: TType;
-  handler: SimpleHandler<TState>;
-  create: () => Action<TType>;
+  handle: SimpleHandler<TState>;
+  create: () => SimpleAction<TType>;
   isMine: (action: Action) => action is SimpleAction<TType>;
 }
 
 export function createAction<TType extends string, TState, TPayload>(
   type: TType,
-  handler: (prev: TState, payload: TPayload) => TState
+  handle: (prev: TState, payload: TPayload) => TState
 ): ActionDesc<TType, TState, TPayload> {
   return {
     tag: ActionType.WITH_PAYLOAD,
     type,
-    handler,
+    handle,
     isMine: (action): action is PayloadAction<TType, TPayload> =>
       action.type === type,
     create: payload => ({ type, payload })
@@ -51,13 +51,13 @@ export function createAction<TType extends string, TState, TPayload>(
 
 export function createSimpleAction<TType extends string, TState>(
   type: TType,
-  handler: (prev: TState) => TState
+  handle: (prev: TState) => TState
 ): SimpleActionDesc<TType, TState> {
   const action = { type };
   return {
     tag: ActionType.SIMPLE,
     type,
-    handler,
+    handle,
     isMine: (action): action is SimpleAction<TType> => action.type === type,
     create: () => action
   };
@@ -87,7 +87,7 @@ export function createReducer<TState>(
     }
 
     return desc.tag === ActionType.SIMPLE
-      ? desc.handler(prev)
-      : desc.handler(prev, action.payload);
+      ? desc.handle(prev)
+      : desc.handle(prev, action.payload);
   };
 }
