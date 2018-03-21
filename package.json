@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "typesafety and less boilerplate for redux actions/reducers",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "jest"
   },
