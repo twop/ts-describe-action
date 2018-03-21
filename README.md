@@ -42,9 +42,6 @@ const AddTodo = createAction('ADD_TODO', (prev: Todo[], text: string) =>
   prev.concat([{ text, completed: false }])
 );
 
-const add = AddTodo.create('reduce boilerplate');
-// typeof AddTodo.create = (payload:string) => {type: 'ADD_TODO'; payload: string}
-
 function todosReducer(state: Todo[] = [], action: Action): Todo[] {
   if (AddTodo.isMine(action)) {
     // isMine is a typeguard. So we have access to payload: string
@@ -52,6 +49,10 @@ function todosReducer(state: Todo[] = [], action: Action): Todo[] {
   }
   return state;
 }
+
+//later
+const add = AddTodo.create('reduce boilerplate');
+// typeof AddTodo.create = (payload:string) => {type: 'ADD_TODO'; payload: string}
 ```
 
 isMine() & handle() is a convinient way to write a reducer. But what if we automate that too?
@@ -83,10 +84,7 @@ export const ToggleTodo = createAction(
     )
 );
 
-export const todosReducer = createReducer(
-  [AddTodo, ToggleTodo],
-  [] /*initial state*/
-);
+export const todosReducer = createReducer([AddTodo, ToggleTodo], []);
 ```
 
 Also for actions with no payload there is a simplified version:

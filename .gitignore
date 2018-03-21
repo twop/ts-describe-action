@@ -4,3 +4,9 @@ test/*.js
 *.tgz
 
 npm-debug.log
+playground.ts_
+__tests__/index.test.js
+playground.js
+index.js
+index.d.ts
+__tests__/index.test.d.ts

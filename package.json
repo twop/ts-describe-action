@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/twop/redux-typed-actions.git"
   },
-  "keywords": ["redux", "typescript"],
+  "keywords": ["redux", "typescript", "boilerplate"],
   "author": "Simon Korzunov",
   "license": "MIT",
   "bugs": {
@@ -35,7 +35,5 @@
     "jest": "^22.0.1",
     "typescript": "^2.6.2"
   },
-  "dependencies": {
-    "redux": "^4.0.0-beta.1"
-  }
+  "dependencies": {}
 }
