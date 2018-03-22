@@ -1,8 +1,8 @@
 import 'jest';
-import { createAction, createReducer, createSimpleAction } from '../index';
+import { describeAction, createReducer, describeSimple } from '../index';
 
 describe('action/handler cases', () => {
-  const Add = createAction(
+  const Add = describeAction(
     'ADD',
     (prev: number, addition: number) => prev + addition
   );
@@ -12,11 +12,11 @@ describe('action/handler cases', () => {
   });
 
   test('handler for simple action doesnt need payload', () => {
-    const Increment = createSimpleAction('INC', (prev: number) => prev + 1);
+    const Increment = describeSimple('INC', (prev: number) => prev + 1);
     expect(Increment.handle(1)).toBe(2);
   });
 
-  test('action creator put data into payload prop', () => {
+  test('action creator puts data into payload prop', () => {
     const action = Add.create(2);
     expect(action).toEqual({ type: 'ADD', payload: 2 });
   });
@@ -27,13 +27,13 @@ describe('action/handler cases', () => {
   });
 
   test('simple actions are reused', () => {
-    const Inc = createSimpleAction('INC', (prev: number) => prev + 1);
+    const Inc = describeSimple('INC', (prev: number) => prev + 1);
     expect(Inc.create()).toBe(Inc.create());
   });
 });
 
 describe('reducer cases', () => {
-  const Add = createAction(
+  const Add = describeAction(
     'ADD',
     (prev: number, addition: number) => prev + addition
   );
@@ -45,7 +45,7 @@ describe('reducer cases', () => {
   });
 
   test('createReducer takes simple and payload actions', () => {
-    const Increment = createSimpleAction('INC', (prev: number) => prev + 1);
+    const Increment = describeSimple('INC', (prev: number) => prev + 1);
     const reducer = createReducer([Add, Increment], 0);
     expect(reducer(undefined, Increment.create())).toEqual(1);
     expect(reducer(undefined, Add.create(5))).toEqual(5);

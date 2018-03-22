@@ -31,7 +31,7 @@ export interface SimpleActionDesc<TType extends string, TState> {
   isMine: (action: Action) => action is SimpleAction<TType>;
 }
 
-export function createAction<TType extends string, TState, TPayload>(
+export function describeAction<TType extends string, TState, TPayload>(
   type: TType,
   handle: (prev: TState, payload: TPayload) => TState
 ): ActionDesc<TType, TState, TPayload> {
@@ -45,7 +45,7 @@ export function createAction<TType extends string, TState, TPayload>(
   };
 }
 
-export function createSimpleAction<TType extends string, TState>(
+export function describeSimple<TType extends string, TState>(
   type: TType,
   handle: (prev: TState) => TState
 ): SimpleActionDesc<TType, TState> {
@@ -64,18 +64,18 @@ export type AnyActionDesc<TState> =
   | SimpleActionDesc<string, TState>;
 
 export function createReducer<TState>(
-  actions: AnyActionDesc<TState>[],
+  descriptions: AnyActionDesc<TState>[],
   initialState: TState
 ): Reducer<TState> {
-  const descriptions: {
+  const map: {
     [key: string]: AnyActionDesc<TState> | undefined;
-  } = actions.reduce((prev, cur) => ({ ...prev, [cur.type]: cur }), {});
+  } = descriptions.reduce((prev, cur) => ({ ...prev, [cur.type]: cur }), {});
 
   return function reducer(
     prev: TState = initialState,
     action: Action & { payload?: any }
   ): TState {
-    const desc = descriptions[action.type];
+    const desc = map[action.type];
     if (!desc) {
       return prev;
     }

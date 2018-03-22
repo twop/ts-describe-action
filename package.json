@@ -1,7 +1,8 @@
 {
-  "name": "redux-typed-actions",
+  "name": "ts-describe-action",
   "version": "1.0.0",
-  "description": "typesafety and less boilerplate for redux actions/reducers",
+  "description":
+    "describe redux actions with less boilerplate and leverage typesafety",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -9,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/twop/redux-typed-actions.git"
+    "url": "git+https://github.com/twop/ts-describe-action.git"
   },
   "keywords": ["redux", "typescript", "boilerplate"],
   "author": "Simon Korzunov",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/twop/redux-typed-actions/issues"
+    "url": "https://github.com/twop/ts-describe-action/issues"
   },
-  "homepage": "https://github.com/twop/redux-typed-actions#readme",
+  "homepage": "https://github.com/twop/ts-describe-action#readme",
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
