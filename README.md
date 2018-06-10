@@ -8,7 +8,7 @@ reduce redux boilerplate and leverage typescript safety
 npm add ts-describe-action
 ```
 
-Note: requires typescript version >= 2.7
+Note: requires typescript version >= 2.8
 
 ## Motivation
 
@@ -169,7 +169,7 @@ function createReducer<TState>(
 ## Breaking changes from 1.0 release.
 
 - No more `describeSimple`. Use `describeAction` instead
-- Requires ts > 2.7 to support conditional types
+- Requires ts > 2.8 to support conditional types
 
 ## Projects worth checking out
 
