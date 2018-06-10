@@ -1,18 +1,22 @@
 {
   "name": "ts-describe-action",
-  "version": "1.0.0",
-  "description":
-    "describe redux actions with less boilerplate and leverage typesafety",
+  "version": "2.0.0",
+  "description": "describe redux actions with less boilerplate and leverage typesafety",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc -d"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/twop/ts-describe-action.git"
   },
-  "keywords": ["redux", "typescript", "boilerplate"],
+  "keywords": [
+    "redux",
+    "typescript",
+    "boilerplate"
+  ],
   "author": "Simon Korzunov",
   "license": "MIT",
   "bugs": {
@@ -25,17 +29,25 @@
     },
     "globals": {
       "ts-jest": {
+        "tsConfigFile": "tsconfig.test.json",
         "skipBabel": true
-      },
-      "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-      "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
-    }
+      }
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   },
   "devDependencies": {
-    "@types/jest": "^22.0.1",
-    "ts-jest": "^22.0.1",
-    "jest": "^22.0.1",
-    "typescript": "^2.6.2"
+    "@types/jest": "^23.0.0",
+    "ts-jest": "^22.4.6",
+    "jest": "^23.1.0",
+    "typescript": "^2.9.1"
   },
   "dependencies": {}
 }

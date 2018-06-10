@@ -8,6 +8,8 @@ reduce redux boilerplate and leverage typescript safety
 npm add ts-describe-action
 ```
 
+Note: requires typescript version >= 2.7
+
 ## Motivation
 
 ```typescript
@@ -55,7 +57,7 @@ const add = AddTodo.create('reduce boilerplate');
 // typeof add = {type: 'ADD_TODO'; payload: string}
 ```
 
-isMine() & handle() is a convinient way to write a reducer. But what if we automate that too?
+isMine() & handle() is a convenient way to write a reducer. But what if we automate that too?
 
 ```typescript
 const ToggleTodo = describeAction(
@@ -86,17 +88,17 @@ const ToggleTodo = describeAction(
     )
 );
 
-const todosReducer = createReducer([AddTodo, ToggleTodo], []);
+const todosReducer = createReducer([AddTodo, ToggleTodo], [] /*initial state*/);
 ```
 
-Also for actions with no payload there is a simplified version:
+Also you can omit payload:
 
 ```typescript
-const Increment = describeSimple('Inc', (prev: number) => prev + 1);
-const Decrement = describeSimple('Dec', (prev: number) => prev - 1);
+const Increment = describeAction('Inc', (prev: number) => prev + 1);
+const Decrement = describeAction('Dec', (prev: number) => prev - 1);
 
-// action creator. NOTE the object is reused. Increment.create() === Increment.create()
-const increment = Increment.create(); // {type: 'Inc'}
+// Doesn't require payload argument
+const increment = Increment.create(); // {type: 'Inc', payload: undefined}
 
 //handler
 const result = Increment.handle(0); // result === 1
@@ -108,19 +110,19 @@ const reducer = createReducer([Increment, Decrement], 0);
 
 I love redux but I hate writing boilerplate code. So I thought through api that would have a small api surface yet would useful regardless how you write your redux code. So my goals were:
 
-* collocate action tag, shape of payload, the way to handle the action. So I would look at exactly one place for any action related stuff.
-* do so with as little syntax as possible leveraging type inference.
-* small api surface and small bundle size.
-* make it decomposable. So it's a collections of small pieces that work really nice together rather than "one big thing". So it is still useful with or without other libraries (Ex: I use [unionize](https://github.com/pelotom/unionize) to model state)
+- collocate action tag, shape of payload, the way to handle the action. So I would look at exactly one place for any action related stuff.
+- do so with as little syntax as possible leveraging type inference.
+- small api surface and small bundle size.
+- make it decomposable. So it's a collections of small pieces that work really nice together rather than "one big thing". So it is still useful with or without other libraries (Ex: I use [unionize](https://github.com/pelotom/unionize) to model state)
 
 I was unable to find anything I really like so here you go.
 
 ## API
 
-Action descriptions types:
+Action descriptions types can be essentially split into two interfaces (thanks to typescript 2.7 conditional types):
 
 ```typescript
-// NOTE that handle accepts the actual payload not the action.
+// With payload
 interface ActionDesc<TType extends string, TState, TPayload> {
   type: TType;
   handle: (prev: TState, payload: TPayload) => TState;
@@ -128,8 +130,8 @@ interface ActionDesc<TType extends string, TState, TPayload> {
   isMine: (action: Action) => action is { type: TType; payload: TPayload };
 }
 
-// for actions with no payload
-interface SimpleActionDesc<TType extends string, TState> {
+//No payload
+interface ActionDesc<TType extends string, TState> {
   type: TType;
   handle: (prev: TState) => TState;
   create: () => { type: TType };
@@ -137,28 +139,37 @@ interface SimpleActionDesc<TType extends string, TState> {
 }
 ```
 
-It is just 3 functions:
+It is just 2 functions:
 
 ```typescript
-// create desc for actions with payload. TType, TPayload, TState are all infered.
-function describeAction<TType extends string, TState, TPayload>(
-  type: TType,
-  handle: (prev: TState, payload: TPayload) => TState
-): ActionDesc<TType, TState, TPayload>;
+// create action description
+const describeAction: Describe;
 
-// useful for actions with no payload.
-function describeSimple<TType extends string, TState>(
-  type: TType,
-  handle: (prev: TState) => TState
-): SimpleActionDesc<TType, TState>;
+type Describe = {
+  // no payload `overload`
+  <TType extends string, TState>(
+    type: TType,
+    handle: (prev: TState) => TState
+  ): ActionDesc<TType, TState, void>;
 
-// Note that descriptions can be a mix of SimpleActionDesc & ActionDesc
-// They just have to share the state type.
+  // with payload
+  <TType extends string, TState, TPayload>(
+    type: TType,
+    handle: (prev: TState, payload: TPayload) => TState
+  ): ActionDesc<TType, TState, TPayload>;
+};
+
+// combine all descriptions into one reducer
 function createReducer<TState>(
-  descriptions: AnyActionDesc<TState>[],
+  descriptions: ActionDesc<string, TState, any>[],
   initialState: TState
 ): Reducer<TState, Action<string>>;
 ```
+
+## Breaking changes from 1.0 release.
+
+- No more `describeSimple`. Use `describeAction` instead
+- Requires ts > 2.7 to support conditional types
 
 ## Projects worth checking out
 
@@ -172,4 +183,4 @@ Amazing library to create tagged unions. As it turned out you can think of redux
 
 ### redux-typed-action (https://www.npmjs.com/package/redux-typed-action)
 
-Almost identical api (dosn't have typeguards?)
+Almost identical api (doesn't have typeguards?)

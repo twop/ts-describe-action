@@ -1,74 +1,65 @@
-export type Action = { type: string };
-export type Reducer<S> = (prev: S | undefined, action: Action) => S;
+type Action = { type: string };
+type Reducer<S> = (prev: S | undefined, action: Action) => S;
 
-export type PayloadAction<TType extends string, TPayload> = {
-  type: TType;
-  payload: TPayload;
-};
+type ActionShape<TType extends string, TPayload> = TPayload extends void
+  ? { type: TType; payload: undefined }
+  : { type: TType; payload: TPayload };
 
-export type SimpleAction<TType extends string> = { type: TType };
+type Handler<TState, TPayload> = TPayload extends void
+  ? { (prev: TState): TState }
+  : { (prev: TState, payload: TPayload): TState };
 
-export type Handler<TState, TPayload> = (
-  prev: TState,
-  payload: TPayload
-) => TState;
-
-export type SimpleHandler<TState> = (prev: TState) => TState;
+type Creator<TType extends string, TPayload> = TPayload extends void
+  ? (payload?: undefined) => ActionShape<TType, void>
+  : (payload: TPayload) => ActionShape<TType, TPayload>;
 
 export interface ActionDesc<TType extends string, TState, TPayload> {
-  tag: 'with payload';
+  //tag: 'with payload';
   type: TType;
   handle: Handler<TState, TPayload>;
-  create: (payload: TPayload) => PayloadAction<TType, TPayload>;
-  isMine: (action: Action) => action is PayloadAction<TType, TPayload>;
+  create: Creator<TType, TPayload>;
+  isMine: (action: Action) => action is ActionShape<TType, TPayload>;
 }
 
-export interface SimpleActionDesc<TType extends string, TState> {
-  tag: 'simple';
-  type: TType;
-  handle: SimpleHandler<TState>;
-  create: () => SimpleAction<TType>;
-  isMine: (action: Action) => action is SimpleAction<TType>;
-}
-
-export function describeAction<TType extends string, TState, TPayload>(
+function describeA<TType extends string, TState, TPayload>(
   type: TType,
-  handle: (prev: TState, payload: TPayload) => TState
+  handle: Handler<TState, TPayload>
 ): ActionDesc<TType, TState, TPayload> {
+  // TODO type check?
+  const create: any = (payload: TPayload) => ({
+    type,
+    payload
+  });
+
   return {
-    tag: 'with payload',
     type,
     handle,
-    isMine: (action): action is PayloadAction<TType, TPayload> =>
+    isMine: (action): action is ActionShape<TType, TPayload> =>
       action.type === type,
-    create: payload => ({ type, payload })
+    create
   };
 }
 
-export function describeSimple<TType extends string, TState>(
-  type: TType,
-  handle: (prev: TState) => TState
-): SimpleActionDesc<TType, TState> {
-  const action = { type };
-  return {
-    tag: 'simple',
-    type,
-    handle,
-    isMine: (action): action is SimpleAction<TType> => action.type === type,
-    create: () => action
-  };
-}
+type Describe = {
+  <TType extends string, TState>(
+    type: TType,
+    handle: (prev: TState) => TState
+  ): ActionDesc<TType, TState, void>;
 
-export type AnyActionDesc<TState> =
-  | ActionDesc<string, TState, any>
-  | SimpleActionDesc<string, TState>;
+  <TType extends string, TState, TPayload>(
+    type: TType,
+    handle: (prev: TState, payload: TPayload) => TState
+  ): ActionDesc<TType, TState, TPayload>;
+};
+
+export const describeAction = (describeA as any) as Describe;
 
 export function createReducer<TState>(
-  descriptions: AnyActionDesc<TState>[],
+  descriptions: ActionDesc<string, TState, any>[],
   initialState: TState
 ): Reducer<TState> {
   const map: {
-    [key: string]: AnyActionDesc<TState> | undefined;
+    [key: string]: ActionDesc<string, TState, any> | undefined;
   } = descriptions.reduce((prev, cur) => ({ ...prev, [cur.type]: cur }), {});
 
   return function reducer(
@@ -80,8 +71,7 @@ export function createReducer<TState>(
       return prev;
     }
 
-    return desc.tag === 'simple'
-      ? desc.handle(prev)
-      : desc.handle(prev, action.payload);
+    // TODO type check?
+    return (desc.handle as any)(prev, action.payload);
   };
 }
