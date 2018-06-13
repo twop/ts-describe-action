@@ -23,7 +23,7 @@ function todosReducer(state: Todo[] = [], action: Action): Todo[] {
   switch (action.type) {
     case ADD_TODO: {
       const { text } = <AddTodoAction>action;
-      return state.concat([{ text, completed: false }]);
+      return [...prev, { text, completed: false }];
     }
     default:
       return state;
@@ -40,15 +40,32 @@ Most of that is by design: we need to decouple intent & effect. But what if we r
 ## Here what this library does
 
 ```typescript
-const AddTodo = describeAction('ADD_TODO', (prev: Todo[], text: string) =>
-  prev.concat([{ text, completed: false }])
+const AddTodo = describeAction('ADD_TODO', (prev: Todo[], text: string) => [
+  ...prev,
+  { text, completed: false }
+]);
+
+const ToggleTodo = describeAction(
+  'TOGGLE_TODO',
+  (prev: Todo[], index: number) =>
+    prev.map(
+      (todo, i) =>
+        index === i ? { text: todo.text, completed: !todo.completed } : todo
+    )
 );
 
+// your normal reducer function
 function todosReducer(state: Todo[] = [], action: Action): Todo[] {
   if (AddTodo.isMine(action)) {
     // isMine is a typeguard. So we have access to payload: string
     return AddTodo.handle(state, action.payload);
   }
+
+  if (ToggleTodo.isMine(action)) {
+    // here type of action.payload is number
+    return ToggleTodo.handle(state, action.payload);
+  }
+
   return state;
 }
 
@@ -60,24 +77,16 @@ const add = AddTodo.create('reduce boilerplate');
 isMine() & handle() is a convenient way to write a reducer. But what if we automate that too?
 
 ```typescript
-const ToggleTodo = describeAction(
-  'TOGGLE_TODO',
-  (prev: Todo[], index: number) =>
-    prev.map(
-      (todo, i) =>
-        index === i ? { text: todo.text, completed: !todo.completed } : todo
-    )
-);
-
 const todosReducer = createReducer([AddTodo, ToggleTodo], [] /*initial state*/);
 ```
 
 ## All combined
 
 ```typescript
-const AddTodo = describeAction('ADD_TODO', (prev: Todo[], text: string) =>
-  prev.concat([{ text, completed: false }])
-);
+const AddTodo = describeAction('ADD_TODO', (prev: Todo[], text: string) => [
+  ...prev,
+  { text, completed: false }
+]);
 
 const ToggleTodo = describeAction(
   'TOGGLE_TODO',
@@ -108,14 +117,15 @@ const reducer = createReducer([Increment, Decrement], 0);
 
 ## Yet another typescript redux library?
 
-I love redux but I hate writing boilerplate code. So I thought through api that would have a small api surface yet would useful regardless how you write your redux code. So my goals were:
+I love redux but I hate writing boilerplate code. So I wanted an api that would have a small api surface yet would be useful regardless how you write your redux code. So my goals were:
 
-- collocate action tag, shape of payload, the way to handle the action. So I would look at exactly one place for any action related stuff.
+- collocate action tag, shape of payload and the way to handle the action. So I would look at exactly one place for any action related stuff.
 - do so with as little syntax as possible leveraging type inference.
 - small api surface and small bundle size.
+- make it useful for "brownfield" project. You can try to convert a small reducer function and go from there.
 - make it decomposable. So it's a collections of small pieces that work really nice together rather than "one big thing". So it is still useful with or without other libraries (Ex: I use [unionize](https://github.com/pelotom/unionize) to model state)
 
-I was unable to find anything I really like so here you go.
+I was unable to find anything I really liked, so here you go.
 
 ## API
 
