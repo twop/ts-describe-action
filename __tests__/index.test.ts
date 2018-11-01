@@ -59,3 +59,26 @@ describe('reducer cases', () => {
     expect(reducer(undefined, action)).toEqual(123);
   });
 });
+
+describe('sum type for payload works ex: A | B', () => {
+  const Add = describeAction(
+    'add some',
+    (prev: number, trueOrNum: true | number) =>
+      prev + (trueOrNum === true ? 1 : trueOrNum)
+  );
+
+  const Inc = describeAction('inc by 1', (prev: number) => prev + 1);
+
+  test('can invoke action creator with no ts error', () => {
+    const initial = 0;
+    const reducer = createReducer([Add], initial);
+    expect(reducer(undefined, Add.create(true))).toEqual(1);
+    expect(reducer(undefined, Add.create(2))).toEqual(2);
+  });
+
+  test('Can combine simple actions or with payload in one reducer ', () => {
+    const initial = 0;
+    const reducer = createReducer([Add, Inc], initial);
+    expect(reducer(undefined, Inc.create())).toEqual(1);
+  });
+});
