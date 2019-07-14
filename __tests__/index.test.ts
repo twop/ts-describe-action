@@ -1,5 +1,5 @@
 import 'jest';
-import { createReducer, describeAction } from '../index';
+import { createReducer, describeAction } from '../src/index';
 
 describe('action/handler cases', () => {
   const Add = describeAction(

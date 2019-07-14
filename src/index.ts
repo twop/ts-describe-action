@@ -56,12 +56,15 @@ export function createReducer<TState>(
 ): Reducer<TState> {
   const map: {
     [key: string]: ActionDesc<string, TState, any> | undefined;
-  } = descriptions.reduce((prev, cur) => ({ ...prev, [cur.type]: cur }), {});
+  } = {};
+
+  for (const desc of descriptions) map[desc.type] = desc;
 
   return function reducer(
-    prev: TState = initialState,
+    prev: TState | undefined,
     action: Action & { payload?: any }
   ): TState {
+    prev = prev || initialState;
     const desc = map[action.type];
     if (!desc) {
       return prev;

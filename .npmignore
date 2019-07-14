@@ -1,3 +1,13 @@
-__tests__
-playground.ts_
-index.ts
+src
+test
+tsconfig.json
+tsconfig.module.json
+tslint.json
+.travis.yml
+.github
+.prettierignore
+build/docs
+**/*.spec.*
+coverage
+.nyc_output
+*.log
