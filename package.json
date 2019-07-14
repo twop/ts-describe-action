@@ -34,7 +34,8 @@
     "test": "jest",
     "pika-pack": "pack build",
     "pika-publish": "pack publish",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "version": "npx @pika/pack build"
   },
   "dependencies": {},
   "devDependencies": {
