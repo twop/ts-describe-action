@@ -17,20 +17,24 @@ describe('action/handler cases', () => {
   });
 
   test('action creator puts data into payload prop', () => {
-    const action = Add.create(2);
+    const action = Add(2);
     expect(action).toEqual({ type: 'ADD', payload: 2 });
   });
 
+  test('create and action produce structural eq objects', () => {
+    expect(Add(1)).toEqual(Add.create(1));
+  });
+
   test('isMine satisfies itself', () => {
-    const action = Add.create(2);
+    const action = Add(2);
 
     expect(Add.isMine(action)).toBeTruthy();
   });
 
-  test('simple actions are not reused', () => {
+  test('simple actions are reused', () => {
     const Inc = describeAction('INC', (prev: number) => prev + 1);
-    expect(Inc.create() === Inc.create()).toBe(false);
-    expect(Inc.create()).toEqual(Inc.create());
+    expect(Inc.create()).toBe(Inc.create());
+    expect(Inc()).toBe(Inc.create());
   });
 });
 
@@ -49,8 +53,8 @@ describe('reducer cases', () => {
   test('createReducer takes simple and payload actions', () => {
     const Increment = describeAction('INC', (prev: number) => prev + 1);
     const reducer = createReducer([Add, Increment], 0);
-    expect(reducer(undefined, Increment.create())).toEqual(1);
-    expect(reducer(undefined, Add.create(5))).toEqual(5);
+    expect(reducer(undefined, Increment())).toEqual(1);
+    expect(reducer(undefined, Add(5))).toEqual(5);
   });
 
   test('reducer passes payload to handler', () => {
@@ -72,13 +76,13 @@ describe('sum type for payload works ex: A | B', () => {
   test('can invoke action creator with no ts error', () => {
     const initial = 0;
     const reducer = createReducer([Add], initial);
-    expect(reducer(undefined, Add.create(true))).toEqual(1);
-    expect(reducer(undefined, Add.create(2))).toEqual(2);
+    expect(reducer(undefined, Add(true))).toEqual(1);
+    expect(reducer(undefined, Add(2))).toEqual(2);
   });
 
   test('Can combine simple actions or with payload in one reducer ', () => {
     const initial = 0;
     const reducer = createReducer([Add, Inc], initial);
-    expect(reducer(undefined, Inc.create())).toEqual(1);
+    expect(reducer(undefined, Inc())).toEqual(1);
   });
 });
