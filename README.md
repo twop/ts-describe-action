@@ -124,11 +124,11 @@ function todosReducer(state: Todo[] = [], action: Action): Todo[] {
 }
 ```
 
-### Explicit `create` function is still there
+### Old `create` function is still there
 
-In the prev versions the result of `describeAction` was an object with a property `create` that was an action creator.
+In the prev versions of the library the result of `describeAction` was an object with a property `create` that was an action creator.
 
-Now the result `describeAction` is a function that itself is an action creator but has all the same properties as before. Therefore backwards compatible.
+Now the result of `describeAction` is a function that itself is an action creator but has all the same properties as before. Therefore backwards compatible.
 
 ```ts
 const addTodo = describeAction('ADD_TODO', (prev: Todo[], text: string) => [
